@@ -73,6 +73,46 @@ const Login = async (req = request, res = response) => {
         if (conn) conn.end()
     }
 }
+const ChangePass = async (req = request, res = response) => {
+    const {Email, Password, NewPassword} = req.body
+
+    if(!Email || ! Password){
+        res.status(400).json({msg: "Faltan Datos"})
+        return
+    }
+    let conn;
+    try {
+        conn = await pool.getConnection()
+
+        const [changepass] = await conn.query(modelsCloneNetflix.queryCheckEmail, [Email], (error) => {if(error) throw error})
+        
+        if(!changepass){
+            res.status(404).json({msg: `la usuario no está registrado.`})
+            return
+        }
+        const passValid = bcryptjs.compareSync(Password, changepass.Pass)
+        const salt = bcryptjs.genSaltSync()
+        const passwordCifrada = bcryptjs.hashSync(NewPassword, salt)
+
+        if(!passValid){
+            res.status(403).json({msg:"La contraseña que se ingresó no son válidos."})
+            return
+        }
+        register = await conn.query(modelsCloneNetflix.queryChangePass, [passwordCifrada, Email])
+        
+        if (register.affectedRows === 0) {
+            res.status(404).json({msg: `No se pudo actualizar la cuenta.`})
+            return
+        }
+        res.json({msg:`Se Actualizó satisfactoriamente la cuenta.`})
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({msg: error})
+    } finally {
+        if (conn) conn.end()
+    }
+}
 const DisableUser = async (req = request, res = response) => {
     const {ID} = req.params
 
@@ -274,8 +314,6 @@ const ManageSerie = async (req = request, res = response) => {
         conn = await pool.getConnection()
 
         const checkserie = await conn.query(`SELECT Name FROM Series`, (error) => {if(error) throw error})
-        const checkseason = await conn.query(`SELECT NameSeason FROM Seasons`, (error) => {if(error) throw error})
-        const checkepisode = await conn.query(`SELECT NameEpisode FROM Episodeo`, (error) => {if(error) throw error})
         
         if(!checkserie){
             res.status(404).json({msg: `Ninguna Serie registrado.`})
@@ -283,7 +321,7 @@ const ManageSerie = async (req = request, res = response) => {
         }
 
         
-        res.json({checkserie, checkseason, checkepisode})
+        res.json({checkserie})
 
     } catch (error) {
         console.log(error)
@@ -439,4 +477,4 @@ const Search = async (req = request, res = response) => {
         if (conn) conn.end()
     }
 }
-module.exports = {SignUp, ManageUsers, AddProfile, AddGender, ManageGenders, AddSerie, AddMovies, ManageSerie, ManageMovies, AddAccount, ManageAccount, EditAccount, ManageSubscription, Login, DisableUser, Search}
+module.exports = {SignUp, ManageUsers, AddProfile, AddGender, ManageGenders, AddSerie, AddMovies, ManageSerie, ManageMovies, AddAccount, ManageAccount, EditAccount, ManageSubscription, Login, DisableUser, Search, ChangePass}

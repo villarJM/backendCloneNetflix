@@ -1,7 +1,7 @@
 //http://localhost:4000/api/v1/clonenetflix
 const {Router} = require('express')
 const router = Router()
-const { SignUp, ManageUsers, AddProfile, AddGender, ManageGenders, AddSerie, AddMovies, ManageSerie, ManageMovies, AddAccount, ManageAccount, EditAccount, ManageSubscription, Login, DisableUser, Search } = require('../controllers/clonenetflix')
+const { SignUp, ManageUsers, AddProfile, AddGender, ManageGenders, AddSerie, AddMovies, ManageSerie, ManageMovies, AddAccount, ManageAccount, EditAccount, ManageSubscription, Login, DisableUser, Search, ChangePass } = require('../controllers/clonenetflix')
 ///POST///
 router.post("/signup", SignUp)
 router.post("/addprofile", AddProfile)
@@ -20,6 +20,7 @@ router.get("/managesubs", ManageSubscription)
 router.get("/search", Search)
 ///PUT///
 router.put("/editaccount", EditAccount)
+router.put("/changepass", ChangePass)
 ///DELETE//
 router.delete("/disableuser/id/:ID", DisableUser)
 

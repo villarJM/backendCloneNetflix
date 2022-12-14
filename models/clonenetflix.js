@@ -2,6 +2,8 @@ const modelsCloneNetflix = {
     queryCheckUser: `SELECT * FROM Users WHERE Email = ?`,
     queryCheckAllUser: `SELECT * FROM Users`,
     queryRegisterUser: `INSERT INTO Users (IDS, Email, Pass, Phone, Active) VALUES (?, ?, ?, ?, ?)`,
+    queryChangePass: `UPDATE Users SET Pass = ? WHERE Email = ?`,
+    queryCheckEmail: `SELECT Email, Pass FROM Users WHERE Email = ?`,
     queryCheckProfile:`SELECT a.Name FROM Profile a INNER JOIN Users b ON a.IDUsr = b.ID WHERE Name = ? AND Email = ?`,
     queryRegisterProfile: `INSERT INTO Profile (IDUsr, Name, UnderAge, Active) VALUES (?, ?, ?, ?)`,
     queryCheckUserID:`SELECT ID FROM Users WHERE Email = ? AND Pass = ?`,
